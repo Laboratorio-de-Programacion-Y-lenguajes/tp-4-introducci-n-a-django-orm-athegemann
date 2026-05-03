@@ -10,7 +10,6 @@ class Autor(models.Model):
     Requerido: nombre, email único, biografía opcional.
     """
 
-    # TODO: implementar los campos del modelo
     # Ejemplo de campo:
     # nombre = models.CharField(max_length=120)
     #
@@ -18,11 +17,12 @@ class Autor(models.Model):
     # email    → EmailField (unique=True)
     # biografia → TextField (blank=True para hacerlo opcional)
 
-    pass
+    nombre = models.CharField(max_length=100)
+    email = models.EmailField(unique=True)
+    biografia = models.TextField(blank=True)
 
-    # Opcional: definir __str__ para que sea legible en el admin y en el shell
-    # def __str__(self) -> str:
-    #     return self.nombre
+    def __str__(self):
+        return self.nombre
 
 
 class Categoria(models.Model):
@@ -31,12 +31,10 @@ class Categoria(models.Model):
     Ejemplos: 'fantasía', 'ciencia ficción', 'historia'.
     """
 
-    # TODO: implementar el campo nombre (unique=True)
+    nombre = models.CharField(max_length=100,unique=True)
 
-    pass
-
-    # def __str__(self) -> str:
-    #     return self.nombre
+    def __str__(self):
+        return self.nombre
 
 
 class Libro(models.Model):
@@ -44,8 +42,7 @@ class Libro(models.Model):
     Libro del catálogo de la biblioteca.
     Tiene relación N:1 con Autor y N:M con Categoria.
     """
-
-    # TODO: implementar los campos:
+    
     # titulo          → CharField
     # isbn            → CharField (unique=True)
     # fecha_publicacion → DateField
@@ -57,7 +54,12 @@ class Libro(models.Model):
     # ¿Qué pasa si eliminás un autor que tiene libros? (PROTECT vs CASCADE)
     # ¿Por qué isbn debe ser único?
 
-    pass
+    titulo = models.CharField(max_length=100)
+    isbn = models.CharField(max_length=13,unique=True) # Identificador del libro
+    fecha_publicacion = models.DateField()
+    cantidad_total = models.PositiveIntegerField()
+    autor = models.ForeignKey(Autor,on_delete=models.PROTECT) # No borrar al autor de un libro
+    categorias = models.ManyToManyField(Categoria) # Puede tener muchas categorias
 
     def prestamos_activos(self) -> int:
         """
@@ -65,24 +67,25 @@ class Libro(models.Model):
 
         Un préstamo es "activo" cuando no se ha registrado devolución.
         """
-        # TODO: implementar con ORM usando filter sobre los préstamos relacionados
+
         # Pista: self.prestamo_set.filter(fecha_devolucion__isnull=True).count()
         #        (o el related_name que hayas definido en Prestamo.libro)
-        raise NotImplementedError
+
+        return self.prestamo_set.filter(fecha_devolucion__isnull=True).count()
 
     def disponibles(self) -> int:
         """
         Retorna cuántas copias están disponibles:
         cantidad_total - prestamos_activos()
         """
-        # TODO: implementar
-        raise NotImplementedError
+        return self.cantidad_total - self.prestamos_activos()
 
     def tiene_disponibles(self) -> bool:
         """Retorna True si hay al menos una copia disponible."""
-        # TODO: implementar
-        raise NotImplementedError
+        return self.disponibles() > 0
 
+    def __str__(self):
+        return self.titulo
 
 class Prestamo(models.Model):
     """
@@ -90,7 +93,6 @@ class Prestamo(models.Model):
     Si fecha_devolucion es NULL → el préstamo está activo.
     """
 
-    # TODO: implementar los campos:
     # libro              → ForeignKey(Libro, on_delete=models.CASCADE)
     # nombre_prestatario → CharField
     # fecha_prestamo     → DateField
@@ -102,4 +104,7 @@ class Prestamo(models.Model):
     # Tip: podés usar default=timezone.now si querés fecha automática,
     #      o dejarlo sin default para que el test lo defina explícitamente.
 
-    pass
+    libro = models.ForeignKey(Libro,on_delete=models.CASCADE) # Si se borra el libro, se borra el prestamo
+    nombre_prestatario = models.CharField(max_length=100)
+    fecha_prestamo = models.DateField(default=timezone.now) # Valor por defecto el dia que se genero el insert
+    fecha_devolucion = models.DateField(null=True,blank=True)
