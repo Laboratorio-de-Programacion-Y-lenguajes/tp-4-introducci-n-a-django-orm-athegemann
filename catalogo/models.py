@@ -67,6 +67,9 @@ class Libro(models.Model):
         # TODO: implementar
         raise NotImplementedError
 
+    def __str__(self):
+        return self.titulo
+
 class Prestamo(models.Model):
     """
     Registro de un préstamo de libro a un usuario.
