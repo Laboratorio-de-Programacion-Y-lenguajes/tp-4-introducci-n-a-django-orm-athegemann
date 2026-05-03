@@ -36,19 +36,12 @@ class Libro(models.Model):
     Tiene relación N:1 con Autor y N:M con Categoria.
     """
 
-    # TODO: implementar los campos:
-    # titulo          → CharField
-    # isbn            → CharField (unique=True)
-    # fecha_publicacion → DateField
-    # cantidad_total  → PositiveIntegerField
-    # autor           → ForeignKey(Autor, on_delete=models.PROTECT)
-    # categorias      → ManyToManyField(Categoria)
-    #
-    # Preguntas guía:
-    # ¿Qué pasa si eliminás un autor que tiene libros? (PROTECT vs CASCADE)
-    # ¿Por qué isbn debe ser único?
-
-    pass
+    titulo = models.CharField(max_length=100)
+    isbn = models.CharField(unique=True) # Identificador del libro
+    fecha_publicacion = models.DateField()
+    cantidad_total = models.PositiveIntegerField()
+    autor = models.ForeignKey(Autor,on_delete=models.PROTECT) # No borrar un libro que tiene un autor
+    categorias = models.ManyToManyField(Categoria) # Puede tener muchas categorias
 
     def prestamos_activos(self) -> int:
         """
