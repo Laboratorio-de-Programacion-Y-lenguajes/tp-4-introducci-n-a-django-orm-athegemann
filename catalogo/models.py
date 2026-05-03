@@ -40,7 +40,7 @@ class Libro(models.Model):
     isbn = models.CharField(unique=True) # Identificador del libro
     fecha_publicacion = models.DateField()
     cantidad_total = models.PositiveIntegerField()
-    autor = models.ForeignKey(Autor,on_delete=models.PROTECT) # No borrar un libro que tiene un autor
+    autor = models.ForeignKey(Autor,on_delete=models.PROTECT) # No borrar al autor de un libro
     categorias = models.ManyToManyField(Categoria) # Puede tener muchas categorias
 
     def prestamos_activos(self) -> int:
@@ -67,7 +67,6 @@ class Libro(models.Model):
         # TODO: implementar
         raise NotImplementedError
 
-
 class Prestamo(models.Model):
     """
     Registro de un préstamo de libro a un usuario.
@@ -86,4 +85,7 @@ class Prestamo(models.Model):
     # Tip: podés usar default=timezone.now si querés fecha automática,
     #      o dejarlo sin default para que el test lo defina explícitamente.
 
-    pass
+    libro = models.ForeignKey(Libro,on_delete=models.CASCADE) # Si se borra el libro, se borra el prestamo
+    nombre_prestatario = models.CharField(max_length=100)
+    fecha_prestamo = models.DateField(default=timezone.now()) # Valor por defecto el dia que se genero el insert
+    fecha_devolucion = models.DateField(null=True,blank=True)
