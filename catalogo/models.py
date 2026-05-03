@@ -78,5 +78,5 @@ class Prestamo(models.Model):
 
     libro = models.ForeignKey(Libro,on_delete=models.CASCADE) # Si se borra el libro, se borra el prestamo
     nombre_prestatario = models.CharField(max_length=100)
-    fecha_prestamo = models.DateField(default=timezone.now()) # Valor por defecto el dia que se genero el insert
+    fecha_prestamo = models.DateField(default=timezone.now) # Valor por defecto el dia que se genero el insert
     fecha_devolucion = models.DateField(null=True,blank=True)
