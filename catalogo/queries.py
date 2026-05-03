@@ -80,7 +80,7 @@ def top_n_libros_mas_prestados(n: int):
 
     Pista:
         Libro.objects.annotate(total_prestamos=Count("prestamo"))
-                     .order_by("-total_prestamos")[:n]
+                    .order_by("-total_prestamos")[:n]
     """
     # TODO: implementar con annotate + order_by + slicing
     raise NotImplementedError
