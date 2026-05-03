@@ -37,7 +37,7 @@ class Libro(models.Model):
     """
 
     titulo = models.CharField(max_length=100)
-    isbn = models.CharField(unique=True) # Identificador del libro
+    isbn = models.CharField(max_length=13,unique=True) # Identificador del libro
     fecha_publicacion = models.DateField()
     cantidad_total = models.PositiveIntegerField()
     autor = models.ForeignKey(Autor,on_delete=models.PROTECT) # No borrar al autor de un libro
