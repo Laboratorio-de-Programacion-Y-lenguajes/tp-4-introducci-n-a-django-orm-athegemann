@@ -26,7 +26,7 @@ class Categoria(models.Model):
 
     nombre = models.CharField(max_length=100,unique=True)
 
-    def __str__(self) -> str:
+    def __str__(self):
         return self.nombre
 
 
@@ -75,18 +75,6 @@ class Prestamo(models.Model):
     Registro de un préstamo de libro a un usuario.
     Si fecha_devolucion es NULL → el préstamo está activo.
     """
-
-    # TODO: implementar los campos:
-    # libro              → ForeignKey(Libro, on_delete=models.CASCADE)
-    # nombre_prestatario → CharField
-    # fecha_prestamo     → DateField
-    # fecha_devolucion   → DateField (null=True, blank=True)
-    #
-    # Preguntas guía:
-    # ¿Por qué usamos CASCADE aquí y PROTECT en Libro→Autor?
-    # ¿Qué valor por defecto tendría sentido para fecha_prestamo?
-    # Tip: podés usar default=timezone.now si querés fecha automática,
-    #      o dejarlo sin default para que el test lo defina explícitamente.
 
     libro = models.ForeignKey(Libro,on_delete=models.CASCADE) # Si se borra el libro, se borra el prestamo
     nombre_prestatario = models.CharField(max_length=100)
