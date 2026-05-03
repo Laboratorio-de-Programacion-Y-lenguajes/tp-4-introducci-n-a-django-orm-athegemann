@@ -10,6 +10,13 @@ class Autor(models.Model):
     Requerido: nombre, email único, biografía opcional.
     """
 
+    # Ejemplo de campo:
+    # nombre = models.CharField(max_length=120)
+    #
+    # nombre   → CharField (max_length a elección)
+    # email    → EmailField (unique=True)
+    # biografia → TextField (blank=True para hacerlo opcional)
+
     nombre = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
     biografia = models.TextField(blank=True)
@@ -35,6 +42,17 @@ class Libro(models.Model):
     Libro del catálogo de la biblioteca.
     Tiene relación N:1 con Autor y N:M con Categoria.
     """
+    
+    # titulo          → CharField
+    # isbn            → CharField (unique=True)
+    # fecha_publicacion → DateField
+    # cantidad_total  → PositiveIntegerField
+    # autor           → ForeignKey(Autor, on_delete=models.PROTECT)
+    # categorias      → ManyToManyField(Categoria)
+    #
+    # Preguntas guía:
+    # ¿Qué pasa si eliminás un autor que tiene libros? (PROTECT vs CASCADE)
+    # ¿Por qué isbn debe ser único?
 
     titulo = models.CharField(max_length=100)
     isbn = models.CharField(max_length=13,unique=True) # Identificador del libro
@@ -49,6 +67,10 @@ class Libro(models.Model):
 
         Un préstamo es "activo" cuando no se ha registrado devolución.
         """
+
+        # Pista: self.prestamo_set.filter(fecha_devolucion__isnull=True).count()
+        #        (o el related_name que hayas definido en Prestamo.libro)
+
         return self.prestamo_set.filter(fecha_devolucion__isnull=True).count()
 
     def disponibles(self) -> int:
@@ -70,6 +92,17 @@ class Prestamo(models.Model):
     Registro de un préstamo de libro a un usuario.
     Si fecha_devolucion es NULL → el préstamo está activo.
     """
+
+    # libro              → ForeignKey(Libro, on_delete=models.CASCADE)
+    # nombre_prestatario → CharField
+    # fecha_prestamo     → DateField
+    # fecha_devolucion   → DateField (null=True, blank=True)
+    #
+    # Preguntas guía:
+    # ¿Por qué usamos CASCADE aquí y PROTECT en Libro→Autor?
+    # ¿Qué valor por defecto tendría sentido para fecha_prestamo?
+    # Tip: podés usar default=timezone.now si querés fecha automática,
+    #      o dejarlo sin default para que el test lo defina explícitamente.
 
     libro = models.ForeignKey(Libro,on_delete=models.CASCADE) # Si se borra el libro, se borra el prestamo
     nombre_prestatario = models.CharField(max_length=100)
